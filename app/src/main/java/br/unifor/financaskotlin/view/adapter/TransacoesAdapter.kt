@@ -1,23 +1,40 @@
 package br.unifor.financaskotlin.view.adapter
 
+import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import br.unifor.financaskotlin.R
+import br.unifor.financaskotlin.model.Transacao
+import br.unifor.financaskotlin.view.adapter.item.TransacaoItem
 
-class TransacoesAdapter : BaseAdapter() {
+class TransacoesAdapter(private val transacoes: List<Transacao>,
+                        private val context: Context) : BaseAdapter() {
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+        var view = convertView
+
+        if(view == null){
+            view = LayoutInflater.from(context).inflate(R.layout.transacao_item, parent, false)
+        }
+
+        TransacaoItem(view!!, getItem(position)).bind()
+
+        return view
+
     }
 
-    override fun getItem(position: Int): Any {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getItem(position: Int): Transacao {
+        return transacoes[position]
     }
 
     override fun getItemId(position: Int): Long {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return position.toLong()
     }
 
     override fun getCount(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return transacoes.size
     }
 }
