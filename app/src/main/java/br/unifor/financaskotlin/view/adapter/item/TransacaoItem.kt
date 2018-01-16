@@ -1,15 +1,23 @@
 package br.unifor.financaskotlin.view.adapter.item
 
 import android.view.View
+import br.unifor.financaskotlin.extensions.formatoBrasileiro
 import br.unifor.financaskotlin.model.Transacao
 import kotlinx.android.synthetic.main.transacao_item.view.*
-import java.util.*
 
-class TransacaoItem(private val view: View,
-                    private val transacao: Transacao) {
+class TransacaoItem {
 
-    fun bind(){
-        view.transacao_valor.text = String.format(Locale.getDefault() , "%.2f", transacao.valor)
+    companion object {
+
+        fun bind(view: View,
+                 transacao: Transacao){
+
+            view.transacao_valor.text = transacao.valor.formatoBrasileiro()
+            view.transacao_categoria.text = transacao.categoria
+            view.transacao_data.text = transacao.data.formatoBrasileiro()
+
+        }
+
     }
 
 }

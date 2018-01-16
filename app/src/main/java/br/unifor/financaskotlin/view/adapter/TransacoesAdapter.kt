@@ -20,7 +20,7 @@ class TransacoesAdapter(private val transacoes: List<Transacao>,
             view = LayoutInflater.from(context).inflate(R.layout.transacao_item, parent, false)
         }
 
-        TransacaoItem(view!!, getItem(position)).bind()
+        TransacaoItem.bind(view!!, getItem(position))
 
         return view
 
