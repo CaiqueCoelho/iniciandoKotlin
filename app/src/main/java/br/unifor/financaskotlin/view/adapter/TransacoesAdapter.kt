@@ -16,7 +16,7 @@ class TransacoesAdapter(private val transacoes: List<Transacao>,
 
         var view = convertView
 
-        if(view == null){
+        if (view == null) {
             view = LayoutInflater.from(context).inflate(R.layout.transacao_item, parent, false)
         }
 

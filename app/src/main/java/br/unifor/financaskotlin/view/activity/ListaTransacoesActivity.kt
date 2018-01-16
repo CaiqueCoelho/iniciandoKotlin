@@ -4,16 +4,15 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import br.unifor.financaskotlin.R
 import br.unifor.financaskotlin.model.Tipo
-import br.unifor.financaskotlin.view.adapter.TransacoesAdapter
 import br.unifor.financaskotlin.model.Transacao
+import br.unifor.financaskotlin.view.adapter.TransacoesAdapter
 import kotlinx.android.synthetic.main.activity_lista_transacoes.*
 import java.math.BigDecimal
-import java.util.*
 
 //Classe : Herança, Interface1, Interface2
 class ListaTransacoesActivity : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?){
+    override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lista_transacoes)

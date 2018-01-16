@@ -12,8 +12,8 @@
         <activity android:name=".view.activity.ListaTransacoesActivity">
 
             <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER"/>
-                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
 
         </activity>

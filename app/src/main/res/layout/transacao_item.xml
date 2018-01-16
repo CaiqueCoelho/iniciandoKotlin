@@ -17,7 +17,8 @@
             android:layout_height="80dp"
             android:orientation="horizontal">
 
-            <ImageView android:id="@+id/transacao_icone"
+            <ImageView
+                android:id="@+id/transacao_icone"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center"
