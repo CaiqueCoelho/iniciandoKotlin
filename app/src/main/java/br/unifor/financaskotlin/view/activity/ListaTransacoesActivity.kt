@@ -3,6 +3,7 @@ package br.unifor.financaskotlin.view.activity
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import br.unifor.financaskotlin.R
+import br.unifor.financaskotlin.model.Tipo
 import br.unifor.financaskotlin.view.adapter.TransacoesAdapter
 import br.unifor.financaskotlin.model.Transacao
 import kotlinx.android.synthetic.main.activity_lista_transacoes.*
@@ -13,14 +14,13 @@ import java.util.*
 class ListaTransacoesActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?){
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lista_transacoes)
 
-        //Constante VAL, Variável VAR
-//        val transacoes = listOf("Compra 1 - R$100", "Compra 2 - R$35,00")
-
-        val transacoes = listOf(Transacao(BigDecimal(2.5), "Lanche", Calendar.getInstance()),
-                Transacao(BigDecimal(20.38), "Noitada", Calendar.getInstance()))
+        val transacoes = listOf(Transacao(BigDecimal(2.5), "Lanche", tipo = Tipo.DESPESA),
+                Transacao(BigDecimal(20.38), "Noitada", tipo = Tipo.DESPESA),
+                Transacao(BigDecimal(30.00), tipo = Tipo.RECEITA))
 
         val adapter = TransacoesAdapter(transacoes, this)
 
