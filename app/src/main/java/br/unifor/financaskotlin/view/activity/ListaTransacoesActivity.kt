@@ -17,14 +17,28 @@ class ListaTransacoesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lista_transacoes)
 
+        val transacoes = sampleTransactions()
+
+        setupTransactionsList(transacoes)
+
+        setupSummary(transacoes)
+
+    }
+
+    private fun setupSummary(transacoes: List<Transacao>) {
+        ResumoView(window.decorView, transacoes).refreshSummary()
+    }
+
+    private fun setupTransactionsList(transacoes: List<Transacao>) {
+        val adapter = TransacoesAdapter(transacoes, this)
+        lista_transacoes_listview.adapter = adapter
+    }
+
+    private fun sampleTransactions(): List<Transacao> {
         val transacoes = listOf(Transacao(BigDecimal(2.5), "Lanche", tipo = Tipo.DESPESA),
                 Transacao(BigDecimal(20.38), "Noitada", tipo = Tipo.DESPESA),
                 Transacao(BigDecimal(30.00), tipo = Tipo.RECEITA))
-
-        val adapter = TransacoesAdapter(transacoes, this)
-
-        lista_transacoes_listview.adapter = adapter
-
+        return transacoes
     }
 
 }
