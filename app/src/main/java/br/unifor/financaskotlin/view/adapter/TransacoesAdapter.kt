@@ -26,15 +26,10 @@ class TransacoesAdapter(private val transacoes: List<Transacao>,
 
     }
 
-    override fun getItem(position: Int): Transacao {
-        return transacoes[position]
-    }
+    override fun getItem(position: Int) = transacoes[position]
 
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
+    override fun getItemId(position: Int) = position.toLong()
 
-    override fun getCount(): Int {
-        return transacoes.size
-    }
+    override fun getCount() = transacoes.size
+
 }
