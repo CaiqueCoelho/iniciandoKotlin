@@ -3,17 +3,19 @@ package br.unifor.financaskotlin.extensions
 import java.text.SimpleDateFormat
 import java.util.*
 
-private val dateFormat = "dd/MM/yyyy"
-private val timeFormat = "hh:mm"
+private val brDateFormat = "dd/MM/yyyy"
+private val brTimeFormat = "hh:mm"
+
+fun Calendar.mascaraBrasileira(hora: Boolean = false): String {
+    var pattern = brDateFormat
+    if (hora) {
+        pattern += " $brTimeFormat"
+    }
+    return pattern
+}
 
 fun Calendar.formatoBrasileiro(hora: Boolean = true): String {
-
-    var pattern = dateFormat
-
-    if (hora) {
-        pattern += " $timeFormat"
-    }
-
+    val pattern = mascaraBrasileira(hora)
     return SimpleDateFormat(pattern, Locale.getDefault()).format(this.time)
 }
 
