@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
@@ -25,30 +24,48 @@ class TransacaoDialog(private val context: Context,
                       private val viewGroup: ViewGroup,
                       private val tipo: Tipo) {
 
-    fun showAdicionaTransacao(transacaoDelegate: TransacaoDelegate){
+    private val view = criaView()
+    private var transacao: Transacao? = null
+
+    private fun buildDialog(positiveListener: DialogInterface.OnClickListener, titleRes: Int, positiveRes: Int): AlertDialog.Builder {
 
         val builder = AlertDialog.Builder(context)
-        val view = criaView()
 
-        builder.setPositiveButton(R.string.adicionar, positiveListener(view, transacaoDelegate))
+        builder.setPositiveButton(positiveRes, positiveListener)
         builder.setNegativeButton(R.string.cancelar, null)
 
-        configuraData(view)
-        configuraCategorias(view)
-        configuraBuilder(builder, view)
+        configuraValor()
+        configuraData()
+        configuraCategorias()
+        configuraBuilder(builder, titleRes)
 
-        builder.show()
+        return builder
 
     }
 
-    private fun positiveListener(view: View, transacaoDelegate: TransacaoDelegate): DialogInterface.OnClickListener {
+    fun showAdicionaTransacao(transacaoDelegate: TransacaoDelegate) {
+        val titleRes = configuraTitulo(tipo)
+        val positiveRes = R.string.adicionar
+        val positiveListener = positiveListener(transacaoDelegate)
+        buildDialog(positiveListener, titleRes, positiveRes).show()
+    }
+
+    fun showAlteraTransacao(transacao: Transacao, transacaoDelegate: TransacaoDelegate) {
+        val titleRes = configuraTitulo(tipo, alteracao = true)
+        val positiveRes = R.string.alterar
+        val positiveListener = positiveListener(transacaoDelegate)
+        this.transacao = transacao
+        buildDialog(positiveListener, titleRes, positiveRes).show()
+    }
+
+    private fun positiveListener(transacaoDelegate: TransacaoDelegate): DialogInterface.OnClickListener {
 
         return DialogInterface.OnClickListener { _, _ ->
 
-            val (categoriaText, valor, calendar) = converteInputs(view)
+            val (categoriaText, valor, calendar) = converteInputs()
             val transacao = Transacao(valor = valor, data = calendar, categoria = categoriaText, tipo = tipo)
 
-            transacaoDelegate.transacaoCriada(transacao)
+            transacaoDelegate.delegate(transacao)
 
         }
 
@@ -57,7 +74,7 @@ class TransacaoDialog(private val context: Context,
     private fun criaView() =
             LayoutInflater.from(context).inflate(R.layout.form_transacao, viewGroup, false)
 
-    private fun converteInputs(view: View): Triple<String, BigDecimal, Calendar> {
+    private fun converteInputs(): Triple<String, BigDecimal, Calendar> {
         val valorText = view.form_transacao_valor.text.toString()
         val dataText = view.form_transacao_data.text.toString()
         val categoriaText = view.form_transacao_categoria.selectedItem.toString()
@@ -75,31 +92,46 @@ class TransacaoDialog(private val context: Context,
         return Triple(categoriaText, valor, calendar)
     }
 
-    private fun configuraBuilder(builder: AlertDialog.Builder, view: View?) {
-        val titleRes = configuraTitulo(tipo)
+    private fun configuraBuilder(builder: AlertDialog.Builder, titleRes: Int) {
         with(builder) {
             setTitle(titleRes)
             setView(view)
         }
     }
 
-    private fun configuraCategorias(view: View) {
+    private fun configuraValor() {
 
-        val categoriasRes = configuraCategoria(tipo)
-        val categoriasAdapter = ArrayAdapter.createFromResource(context, categoriasRes, android.R.layout.simple_spinner_dropdown_item)
+        val valorTransacao = transacao?.valor ?: BigDecimal.ZERO
 
-        with(view.form_transacao_categoria) {
-            adapter = categoriasAdapter
+        with(view.form_transacao_valor) {
+            setText(String.format(valorTransacao.toString()))
         }
 
     }
 
-    private fun configuraData(view: View) {
-        val hoje = Calendar.getInstance()
+    private fun configuraCategorias() {
+
+        val categoriasRes = configuraCategoria(tipo)
+        val categoriasAdapter = ArrayAdapter.createFromResource(context, categoriasRes, android.R.layout.simple_spinner_dropdown_item)
+
+        val categoriaTransacao = transacao?.categoria
+        val indexCategoria = categoriasAdapter.getPosition(categoriaTransacao)
+
+        with(view.form_transacao_categoria) {
+            adapter = categoriasAdapter
+            setSelection(indexCategoria, true)
+        }
+
+    }
+
+    private fun configuraData() {
+
+        val dataTransacao = transacao?.data ?: Calendar.getInstance()
+
         with(view.form_transacao_data) {
-            setText(hoje.formatoBrasileiro(false))
+            setText(dataTransacao.formatoBrasileiro(false))
             setOnClickListener {
-                showDatePickerDialog(hoje, this)
+                showDatePickerDialog(dataTransacao, this)
             }
         }
     }
@@ -118,21 +150,19 @@ class TransacaoDialog(private val context: Context,
     }
 
     private fun configuraCategoria(tipo: Tipo): Int {
-        val categoriasRes = if (tipo == Tipo.RECEITA) {
+        return if (tipo == Tipo.RECEITA) {
             R.array.categorias_de_receita
         } else {
             R.array.categorias_de_despesa
         }
-        return categoriasRes
     }
 
-    private fun configuraTitulo(tipo: Tipo): Int {
-        val titleRes = if (tipo == Tipo.RECEITA) {
-            R.string.adiciona_receita
+    private fun configuraTitulo(tipo: Tipo, alteracao: Boolean = false): Int {
+        return if (tipo == Tipo.RECEITA) {
+            if (alteracao) R.string.altera_receita else R.string.adiciona_receita
         } else {
-            R.string.adiciona_despesa
+            if (alteracao) R.string.altera_despesa else R.string.adiciona_despesa
         }
-        return titleRes
     }
 
 }

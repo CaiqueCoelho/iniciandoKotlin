@@ -9,7 +9,6 @@ import br.unifor.financaskotlin.model.Transacao
 import br.unifor.financaskotlin.view.adapter.TransacoesAdapter
 import br.unifor.financaskotlin.view.dialog.TransacaoDialog
 import kotlinx.android.synthetic.main.activity_lista_transacoes.*
-import java.math.BigDecimal
 
 class ListaTransacoesActivity : AppCompatActivity() {
 
@@ -20,8 +19,6 @@ class ListaTransacoesActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lista_transacoes)
-
-        sampleTransactions()
 
         setupTransactionsList()
 
@@ -34,22 +31,34 @@ class ListaTransacoesActivity : AppCompatActivity() {
     private fun setupFabs() {
 
         lista_transacoes_adiciona_receita.setOnClickListener {
-            showAlert(Tipo.RECEITA)
+            showAlertAdicionaTransacao(Tipo.RECEITA)
         }
 
         lista_transacoes_adiciona_despesa.setOnClickListener {
-            showAlert(Tipo.DESPESA)
+            showAlertAdicionaTransacao(Tipo.DESPESA)
         }
 
     }
 
-    private fun showAlert(tipo: Tipo) {
+    private fun showAlertAdicionaTransacao(tipo: Tipo) {
 
         TransacaoDialog(this, main_layout, tipo)
                 .showAdicionaTransacao(object : TransacaoDelegate {
-                    override fun transacaoCriada(transacao: Transacao) {
+                    override fun delegate(transacao: Transacao) {
                         lista_transacoes_adiciona_menu.close(true)
                         addTransaction(transacao)
+                    }
+
+                })
+
+    }
+
+    private fun showAlertAlteraTransacao(transacao: Transacao, position: Int) {
+
+        TransacaoDialog(this, main_layout, transacao.tipo)
+                .showAlteraTransacao(transacao, object : TransacaoDelegate {
+                    override fun delegate(transacao: Transacao) {
+                        updateTransaction(position, transacao)
                     }
                 })
 
@@ -61,21 +70,23 @@ class ListaTransacoesActivity : AppCompatActivity() {
         setupSummary()
     }
 
+    private fun updateTransaction(position: Int, transacao: Transacao) {
+        transacoes.set(position, transacao)
+        transacoesAdapter.notifyDataSetChanged()
+        setupSummary()
+    }
+
     private fun setupSummary() {
         ResumoView(window.decorView, transacoes).refreshSummary()
     }
 
     private fun setupTransactionsList() {
+
         lista_transacoes_listview.adapter = transacoesAdapter
-    }
 
-    private fun sampleTransactions() {
-
-        val samples = listOf(Transacao(BigDecimal(2.5), "Lanche", tipo = Tipo.DESPESA),
-                Transacao(BigDecimal(200.38), "Noitada", tipo = Tipo.DESPESA),
-                Transacao(BigDecimal(30.00), tipo = Tipo.RECEITA))
-
-        transacoes.addAll(samples)
+        lista_transacoes_listview.setOnItemClickListener { _, _, position, _ ->
+            showAlertAlteraTransacao(transacoes[position], position)
+        }
 
     }
 
