@@ -15,6 +15,11 @@ class ListaTransacoesActivity : AppCompatActivity() {
     private val transacoes: MutableList<Transacao> = mutableListOf()
     private val transacoesAdapter = TransacoesAdapter(transacoes, this)
 
+    //You shold use lateinit when a var is required
+    //private lateinit var viewActivity: View
+    //Otherwise you can use "by lazy" with val!
+    private val viewActivity by lazy { main_layout }
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -42,7 +47,7 @@ class ListaTransacoesActivity : AppCompatActivity() {
 
     private fun showAlertAdicionaTransacao(tipo: Tipo) {
 
-        TransacaoDialog(this, main_layout, tipo)
+        TransacaoDialog(this, viewActivity, tipo)
                 .showAdicionaTransacao(object : TransacaoDelegate {
                     override fun delegate(transacao: Transacao) {
                         lista_transacoes_adiciona_menu.close(true)
@@ -55,7 +60,7 @@ class ListaTransacoesActivity : AppCompatActivity() {
 
     private fun showAlertAlteraTransacao(transacao: Transacao, position: Int) {
 
-        TransacaoDialog(this, main_layout, transacao.tipo)
+        TransacaoDialog(this, viewActivity, transacao.tipo)
                 .showAlteraTransacao(transacao, object : TransacaoDelegate {
                     override fun delegate(transacao: Transacao) {
                         updateTransaction(position, transacao)
@@ -71,13 +76,13 @@ class ListaTransacoesActivity : AppCompatActivity() {
     }
 
     private fun updateTransaction(position: Int, transacao: Transacao) {
-        transacoes.set(position, transacao)
+        transacoes[position] = transacao
         transacoesAdapter.notifyDataSetChanged()
         setupSummary()
     }
 
     private fun setupSummary() {
-        ResumoView(window.decorView, transacoes).refreshSummary()
+        ResumoView(viewActivity, transacoes).refreshSummary()
     }
 
     private fun setupTransactionsList() {
