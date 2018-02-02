@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.AdapterView
 import br.unifor.financaskotlin.R
+import br.unifor.financaskotlin.dao.TransacaoDAO
 import br.unifor.financaskotlin.model.Tipo
 import br.unifor.financaskotlin.model.Transacao
 import br.unifor.financaskotlin.view.adapter.TransacoesAdapter
@@ -14,10 +15,11 @@ import kotlinx.android.synthetic.main.activity_lista_transacoes.*
 
 class ListaTransacoesActivity : AppCompatActivity() {
 
-    private val idRemoveContextButton: Int = 1;
+    private val idRemoveContextButton: Int = 1
 
-    private val transacoes: MutableList<Transacao> = mutableListOf()
-    private val transacoesAdapter = TransacoesAdapter(transacoes, this)
+    private val dao = TransacaoDAO()
+
+    private val transacoesAdapter = TransacoesAdapter(dao.getTransacoes(), this)
 
     //You shold use lateinit when a var is required
     //private lateinit var viewActivity: View
@@ -81,25 +83,27 @@ class ListaTransacoesActivity : AppCompatActivity() {
     }
 
     private fun addTransaction(transacao: Transacao) {
-        transacoes.add(transacao)
-        transacoesAdapter.notifyDataSetChanged()
-        setupSummary()
+        dao.adiciona(transacao)
+        refresh()
     }
 
     private fun removeTransaction(position: Int) {
-        transacoes.removeAt(position)
-        transacoesAdapter.notifyDataSetChanged()
-        setupSummary()
+        dao.remove(position)
+        refresh()
     }
 
     private fun updateTransaction(position: Int, transacao: Transacao) {
-        transacoes[position] = transacao
-        transacoesAdapter.notifyDataSetChanged()
+        dao.altera(transacao, position)
+        refresh()
+    }
+
+    private fun refresh() {
+        transacoesAdapter.refresh(dao.getTransacoes())
         setupSummary()
     }
 
     private fun setupSummary() {
-        ResumoView(viewActivity, transacoes).refreshSummary()
+        ResumoView(viewActivity, dao.getTransacoes()).refreshSummary()
     }
 
     private fun setupTransactionsList() {
@@ -107,7 +111,7 @@ class ListaTransacoesActivity : AppCompatActivity() {
         with(lista_transacoes_listview) {
             adapter = transacoesAdapter
             setOnItemClickListener { _, _, position, _ ->
-                showAlertAlteraTransacao(transacoes[position], position)
+                showAlertAlteraTransacao(dao.getTransacoes()[position], position)
             }
 
             setOnCreateContextMenuListener { contextMenu, _, _ ->
