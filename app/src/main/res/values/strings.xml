@@ -17,4 +17,5 @@
     <string name="adicionar">Adicionar</string>
     <string name="cancelar">Cancelar</string>
     <string name="valor_invalido">Valor inválido</string>
+    <string name="remover">Remover</string>
 </resources>

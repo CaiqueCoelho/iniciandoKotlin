@@ -28,8 +28,8 @@ abstract class BaseTransacaoDialog(
     private val view by lazy { criaView() }
     protected var transacao: Transacao? = null
 
-    protected fun buildDialog(transacaoDelegate: TransacaoDelegate, titleRes: Int, positiveRes: Int) {
-        val positiveListener = positiveListener(transacaoDelegate)
+    protected fun buildDialog(delegate: (transacao: Transacao) -> Unit, titleRes: Int, positiveRes: Int) {
+        val positiveListener = positiveListener(delegate)
         buildDialog(positiveListener, titleRes, positiveRes).show()
     }
 
@@ -49,18 +49,18 @@ abstract class BaseTransacaoDialog(
 
     }
 
-    abstract fun showAdicionaTransacao(transacaoDelegate: TransacaoDelegate)
+    abstract fun showAdicionaTransacao(delegate: (transacao: Transacao) -> Unit)
 
-    abstract fun showAlteraTransacao(transacao: Transacao, transacaoDelegate: TransacaoDelegate)
+    abstract fun showAlteraTransacao(transacao: Transacao, delegate: (transacao: Transacao) -> Unit)
 
-    protected fun positiveListener(transacaoDelegate: TransacaoDelegate): DialogInterface.OnClickListener {
+    protected fun positiveListener(delegate: (transacao: Transacao) -> Unit): DialogInterface.OnClickListener {
 
         return DialogInterface.OnClickListener { _, _ ->
 
             val (categoriaText, valor, calendar) = converteInputs()
             val transacao = Transacao(valor = valor, data = calendar, categoria = categoriaText, tipo = tipo)
 
-            transacaoDelegate.delegate(transacao)
+            delegate(transacao)
 
         }
 
